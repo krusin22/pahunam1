@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>FACTOR_OS: POLYNOMIAL HACKER (V9.6 WEBHOOK)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { 
+            -webkit-tap-highlight-color: transparent; 
+            touch-action: manipulation !important; 
+        }
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: #020617; 
+            background-image: radial-gradient(#064e3b 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #34d399; 
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden;
+            overscroll-behavior: none; 
+        }
+        
+        input[type="text"] {
+            font-size: 16px !important;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 0; 
+            position: absolute;
+            pointer-events: none;
+            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(16,185,129,0.05) 50%, rgba(0,0,0,0) 100%);
+            animation: scanline 8s linear infinite;
+        }
+        @keyframes scanline { 0% { top: -100px; } 100% { top: 100%; } }
+        
+        .btn-retro {
+            border: 2px solid #34d399;
+            background: #022c22;
+            color: #34d399;
+            transition: transform 0.1s, background-color 0.1s;
+            cursor: pointer;
+            position: relative;
+            z-index: 50; 
+        }
+        .btn-retro:active { background: #34d399; color: #000; transform: scale(0.95); }
+        .btn-retro:disabled { border-color: #ef4444; color: #ef4444; opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        .danger-text { color: #f87171; }
+        .success-text { color: #34d399; }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .shake-anim { animation: shake 0.2s ease-in-out; }
+
+        @keyframes moveLeftRight {
+            0% { left: 0%; }
+            100% { left: calc(100% - 6rem); }
+        }
+        @media (min-width: 768px) {
+            @keyframes moveLeftRight { 0% { left: 0%; } 100% { left: calc(100% - 7rem); } }
+        }
+        @keyframes fallDown { 0% { top: -20%; } 100% { top: 120%; } }
+    </style>
+</head>
+<body class="h-[100dvh] w-screen flex items-center justify-center relative p-2 md:p-4">
+    <div class="scanline"></div>
+
+    <div class="w-full max-w-4xl h-full max-h-[900px] md:h-[85vh] bg-black border-2 md:border-4 border-emerald-500 rounded-lg p-3 md:p-6 flex flex-col shadow-[0_0_20px_rgba(16,185,129,0.3)] z-10 relative">
+        
+        <!-- HEADER -->
+        <div class="flex justify-between items-end border-b-2 border-emerald-500 pb-2 mb-3 md:mb-4 uppercase shrink-0">
+            <div>
+                <h1 class="text-xl md:text-3xl font-bold tracking-widest leading-none text-emerald-400">FACTOR_OS</h1>
+                <p class="text-[10px] md:text-xs text-emerald-700 mt-1">SYS V.9.6 // WEBHOOK INTEGRATED</p>
+            </div>
+            <div class="text-right">
+                <div class="text-sm md:text-xl text-emerald-500">SCORE: <br class="block md:hidden"><span id="ui-score" class="text-xl md:text-3xl font-bold text-white">0000</span></div>
+            </div>
+        </div>
+
+        <!-- MENU SCREEN -->
+        <div id="screen-menu" class="flex-1 flex flex-col items-center justify-center overflow-y-auto z-20 relative">
+            <div class="text-5xl md:text-6xl mb-4 text-emerald-300">∛</div>
+            <p class="mb-4 text-center text-sm md:text-lg max-w-lg leading-relaxed px-2 text-zinc-300 pointer-events-none">
+                ระบบคำนวณถูกล็อค! <br>
+                <span class="text-emerald-400 font-bold">ภารกิจ: แยกตัวประกอบพหุนาม</span><br>
+                <span class="text-emerald-400 text-[11px] md:text-base block mt-2 border border-emerald-800 p-3 md:p-4 bg-zinc-900/80 rounded-lg">
+                    - หา <span class="text-yellow-400 font-bold">2 ตัวเลข</span> ที่คูณและบวกกันได้ตามเป้าหมาย<br>
+                    - พลาดได้ไม่เกิน 2 ครั้งต่อสมการ<br>
+                    - เวลาเริ่ม 60 วิ บีบเร็วสุดเหลือ 20 วิ<br>
+                    - <span class="text-white font-bold">เล่นจบกดบันทึกคะแนนส่งครูได้เลย!</span>
+                </span>
+            </p>
+            
+            <input type="text" id="player-name" placeholder="กรอกชื่อ-สกุล ก่อนเริ่มเกม..." class="w-full max-w-xs mb-4 p-3 text-center bg-zinc-900 border-2 border-emerald-600 text-emerald-400 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder-emerald-800 transition-all z-30 relative" autocomplete="off" spellcheck="false">
+            
+            <button id="btn-start" class="btn-retro px-8 py-3 text-xl md:text-2xl font-bold w-full md:w-auto max-w-xs shadow-[0_0_15px_#10b981] rounded-lg z-30">
+                INITIATE HACK
+            </button>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="screen-game" class="hidden flex-1 flex flex-col h-full overflow-hidden z-20 relative">
+            <div class="w-full bg-zinc-900 border border-emerald-800 h-2 md:h-3 rounded-full mb-3 shrink-0 relative overflow-hidden pointer-events-none">
+                <div id="ui-timer-bar" class="bg-emerald-500 h-full w-full transition-all duration-75"></div>
+                <div id="ui-timer-text" class="absolute inset-0 flex items-center justify-center text-[9px] md:text-[10px] font-bold text-white drop-shadow-md z-10">60.0s</div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-2 md:gap-4 mb-3 shrink-0 pointer-events-none">
+                <div class="bg-zinc-900 border border-emerald-700 p-2 md:p-4 flex-1 text-center relative flex flex-col justify-center shadow-inner rounded-lg">
+                    <div id="target-category" class="text-[10px] md:text-xs text-yellow-400 mb-1">คูณกันได้ C | บวกกันได้ B</div>
+                    <div id="target-word" class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-widest text-white">x² + bx + c</div>
+                </div>
+                <div class="bg-zinc-900 border border-red-900 p-2 md:p-4 w-full md:w-48 text-center flex flex-row md:flex-col justify-center items-center gap-2 md:gap-0 rounded-lg">
+                    <div class="text-[10px] md:text-xs text-red-500 md:mb-1">LOCAL ERRORS:</div>
+                    <div id="ui-strikes" class="text-xl md:text-3xl font-bold text-red-500 tracking-widest">0/2</div>
+                </div>
+            </div>
+
+            <div id="minigame-container" class="flex-1 relative border-2 border-dashed border-emerald-800 p-2 md:p-4 flex items-center justify-center bg-zinc-950 overflow-hidden rounded-lg">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- GAME OVER SCREEN -->
+        <div id="screen-gameover" class="hidden flex-1 flex flex-col items-center justify-center overflow-y-auto z-20 relative w-full">
+            <div id="capture-area" class="w-full max-w-md bg-zinc-950 border-4 border-emerald-800 p-6 md:p-8 rounded-xl text-center shadow-[0_0_30px_rgba(16,185,129,0.2)] relative">
+                <h2 class="text-3xl md:text-5xl font-bold danger-text mb-2 tracking-wider pointer-events-none">SYSTEM BREACHED</h2>
+                <p class="mb-4 text-xs md:text-sm text-zinc-400 pointer-events-none">MATH CONNECTION TERMINATED</p>
+                
+                <div class="border-t border-b border-emerald-800/50 py-5 my-5 bg-black/50 rounded-lg pointer-events-none">
+                    <div class="text-xs text-emerald-600 mb-1 tracking-widest">HACKER IDENTIFICATION</div>
+                    <div id="final-name" class="text-2xl md:text-3xl font-bold text-yellow-400 mb-4 break-words px-2">-</div>
+                    
+                    <div class="text-xs text-emerald-600 mb-1 tracking-widest">FINAL SCORE</div>
+                    <div id="final-score" class="text-6xl text-white font-bold mb-4 font-mono">0</div>
+                    
+                    <div class="text-xs text-emerald-600 mb-1 tracking-widest">RANK EVALUATION</div>
+                    <div id="final-rank" class="text-2xl font-bold text-emerald-400">-</div>
+                </div>
+                <div class="text-[10px] text-zinc-600 font-mono pointer-events-none">FACTOR_OS // V9.6 AUTHENTICATED</div>
+            </div>
+
+            <div class="mt-6 flex flex-col gap-3 w-full max-w-xs">
+                <!-- ⭐️ ปุ่มเซฟรูปจะแสดงตลอดแล้วในเวอร์ชันนี้ -->
+                <button id="btn-save-img" class="btn-retro px-8 py-3 text-lg font-bold rounded-lg bg-emerald-900/50 text-emerald-300 border-emerald-400 hover:bg-emerald-600 hover:text-black">
+                    📸 SAVE SCORE CARD
+                </button>
+                <button id="btn-reboot" class="btn-retro px-8 py-3 text-lg font-bold rounded-lg">
+                    REBOOT SYSTEM
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JAVASCRIPT GAME LOGIC -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('btn-start').addEventListener('click', handleStartClick);
+            document.getElementById('btn-reboot').addEventListener('click', resetGame);
+            document.getElementById('btn-save-img').addEventListener('click', saveScoreImage);
+        });
+
+        // ระบบเสียง
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) audioCtx = new AudioContext();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        }
+
+        function playTone(freq, type, duration, vol=0.1) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) { } 
+        }
+
+        function soundClick() { playTone(900, 'square', 0.05); }
+        function soundWin() { playTone(400, 'sine', 0.1); setTimeout(() => playTone(600, 'sine', 0.15), 100); setTimeout(() => playTone(1000, 'sine', 0.2), 200); }
+        function soundStrike() { playTone(200, 'triangle', 0.2, 0.2); }
+        function soundFail() { playTone(100, 'sawtooth', 0.8, 0.4); } 
+        function soundBlip() { playTone(1400, 'sine', 0.03, 0.05); }
+        function soundTick() { playTone(1000, 'sine', 0.01, 0.02); }
+
+        // สถานะและตัวแปรหลัก
+        let score = 0, currentStrikes = 0;
+        const maxStrikes = 2; 
+        let playerName = ""; 
+        let currentAnswers = []; 
+        let isLocked = false;
+        
+        let gridInterval = null, glitchInterval = null, radarInterval = null;
+        let animationFrame = null, mainTimer = null;
+        let timeTotalMs = 60000, timeLeftMs = 60000;
+
+        const elScore = document.getElementById('ui-score');
+        const elStrikes = document.getElementById('ui-strikes');
+        const elTimerBar = document.getElementById('ui-timer-bar');
+        const elTimerText = document.getElementById('ui-timer-text');
+        
+        const screenMenu = document.getElementById('screen-menu');
+        const screenGame = document.getElementById('screen-game');
+        const screenOver = document.getElementById('screen-gameover');
+        const mgContainer = document.getElementById('minigame-container');
+        const targetWord = document.getElementById('target-word');
+        const targetCategory = document.getElementById('target-category');
+
+        function generatePolynomial() {
+            let m, n;
+            do {
+                m = Math.floor(Math.random() * 25) - 12; 
+                n = Math.floor(Math.random() * 25) - 12; 
+            } while (m === 0 || n === 0); 
+
+            let b = m + n;
+            let c = m * n;
+            
+            return { m, n, b, c };
+        }
+
+        function formatPolynomial(b, c) {
+            let bStr = b === 1 ? "+ x" : b === -1 ? "- x" : b > 0 ? `+ ${b}x` : (b < 0 ? `- ${Math.abs(b)}x` : "");
+            let cStr = c > 0 ? `+ ${c}` : (c < 0 ? `- ${Math.abs(c)}` : "");
+            if (b === 0) bStr = ""; 
+            let eq = `x² ${bStr} ${cStr}`.trim();
+            return eq;
+        }
+
+        function handleStartClick() {
+            const nameInput = document.getElementById('player-name');
+            playerName = nameInput.value.trim(); 
+            
+            if (!playerName) {
+                nameInput.classList.add('shake-anim', 'border-red-500');
+                setTimeout(() => nameInput.classList.remove('shake-anim', 'border-red-500'), 500);
+                return;
+            }
+            startGame();
+        }
+
+        function startGame() {
+            initAudio(); 
+            soundClick();
+            score = 0;
+            updateUI();
+            
+            screenMenu.classList.add('hidden');
+            screenOver.classList.add('hidden');
+            screenGame.classList.remove('hidden');
+            screenGame.classList.add('flex');
+            
+            nextRound(); 
+        }
+
+        function resetGame() {
+            soundClick();
+            screenOver.classList.add('hidden');
+            screenMenu.classList.remove('hidden');
+            document.getElementById('player-name').value = ""; 
+            playerName = "";
+            document.getElementById('btn-save-img').textContent = "📸 SAVE SCORE CARD"; // รีเซ็ตข้อความปุ่ม
+        }
+
+        function updateUI() {
+            elScore.textContent = score.toString().padStart(4, '0');
+            elStrikes.textContent = `${currentStrikes}/${maxStrikes}`;
+        }
+
+        function nextRound() {
+            clearMinigame();
+            currentStrikes = 0;
+            isLocked = false;
+            updateUI();
+            
+            const games = [
+                loadMinigameKeypad, loadMinigameSlider, loadMinigameGrid, loadMinigameWire, 
+                loadMinigameTune, loadMinigameSafeDial, loadMinigameIntercept,
+                loadMinigameFirewall, loadMinigameRadar, loadMinigameGlitch, loadMinigameVault
+            ];
+            const selectedGame = games[Math.floor(Math.random() * games.length)];
+            
+            let poly = generatePolynomial();
+            currentAnswers = [poly.m, poly.n]; 
+            
+            targetCategory.textContent = `คูณกันได้ ${poly.c} | บวกกันได้ ${poly.b}`;
+            targetWord.textContent = formatPolynomial(poly.b, poly.c);
+            
+            targetWord.classList.remove('success-text', 'danger-text');
+            targetWord.classList.add('text-white');
+
+            startTimer();
+            selectedGame();
+        }
+
+        function startTimer() {
+            clearInterval(mainTimer);
+            timeTotalMs = Math.max(20000, 60000 - (score / 5000) * 40000);
+            timeLeftMs = timeTotalMs;
+            
+            elTimerBar.style.width = '100%';
+            elTimerBar.className = 'bg-emerald-500 h-full w-full transition-all duration-75';
+            
+            mainTimer = setInterval(() => {
+                if (isLocked) { clearInterval(mainTimer); return; }
+                
+                timeLeftMs -= 50;
+                let pct = (timeLeftMs / timeTotalMs) * 100;
+                elTimerBar.style.width = pct + '%';
+                elTimerText.textContent = (timeLeftMs / 1000).toFixed(1) + 's';
+
+                if (pct < 30) elTimerBar.classList.replace('bg-emerald-500', 'bg-red-500');
+                if (timeLeftMs <= 0) {
+                    clearInterval(mainTimer);
+                    elTimerBar.style.width = '0%';
+                    handleTimeOut(); 
+                }
+            }, 50);
+        }
+
+        function evaluateAnswer(val, elementToShake = null) {
+            if (isLocked) return;
+
+            let isCorrect = false;
+            let correctStr = [currentAnswers[0], currentAnswers[1]].sort((a,b)=>a-b).join(', '); 
+            
+            if (Array.isArray(val)) {
+                let valStr = [...val].sort((a,b)=>a-b).join(', ');
+                isCorrect = (valStr === correctStr);
+            } else {
+                isCorrect = (val === correctStr);
+            }
+
+            if (isCorrect) {
+                isLocked = true;
+                clearInterval(mainTimer);
+                soundWin();
+                
+                let pointsEarned = Math.floor(Math.random() * (100 - 20 + 1)) + 20;
+                score += pointsEarned;
+                
+                targetWord.textContent = `[${currentAnswers[0]}, ${currentAnswers[1]}] (+${pointsEarned})`; 
+                targetWord.classList.remove('text-white', 'text-3xl', 'sm:text-4xl', 'md:text-5xl');
+                targetWord.classList.add('success-text', 'text-3xl', 'md:text-5xl');
+                setTimeout(nextRound, 1500);
+            } else {
+                currentStrikes++;
+                updateUI();
+                
+                if (elementToShake) {
+                    elementToShake.classList.add('shake-anim');
+                    setTimeout(() => elementToShake.classList.remove('shake-anim'), 200);
+                }
+
+                if (currentStrikes > maxStrikes) {
+                    isLocked = true;
+                    clearInterval(mainTimer);
+                    soundFail();
+                    targetWord.textContent = `ANS: ${currentAnswers[0]}, ${currentAnswers[1]}`;
+                    targetWord.classList.remove('text-white', 'text-3xl', 'sm:text-4xl', 'md:text-5xl');
+                    targetWord.classList.add('danger-text', 'text-3xl', 'md:text-5xl');
+                    setTimeout(gameOver, 2500); 
+                } else {
+                    soundStrike();
+                }
+            }
+            return isCorrect;
+        }
+
+        function handleTimeOut() {
+            if (isLocked) return;
+            isLocked = true;
+            soundFail();
+            targetWord.textContent = `ANS: ${currentAnswers[0]}, ${currentAnswers[1]}`; 
+            targetWord.classList.remove('text-white');
+            targetWord.classList.add('danger-text');
+            setTimeout(gameOver, 2500);
+        }
+
+        function gameOver() {
+            clearMinigame();
+            screenGame.classList.add('hidden');
+            screenGame.classList.remove('flex');
+            screenOver.classList.remove('hidden');
+            screenOver.classList.add('flex');
+            
+            document.getElementById('final-name').textContent = playerName || "UNKNOWN HACKER";
+            document.getElementById('final-score').textContent = score.toString().padStart(4, '0');
+            
+            let rank = "", rankColor = "";
+            if (score < 1000) { rank = "NOOB CALCULATOR"; rankColor = "text-zinc-400"; }
+            else if (score < 2000) { rank = "DATA MINER"; rankColor = "text-emerald-500"; }
+            else if (score < 3000) { rank = "MATH OPERATOR"; rankColor = "text-blue-400"; }
+            else if (score < 5000) { rank = "ELITE HACKER"; rankColor = "text-purple-400"; }
+            else { rank = "GOD OF MATH"; rankColor = "text-yellow-400 font-bold animate-pulse"; }
+            
+            const rankEl = document.getElementById('final-rank');
+            rankEl.textContent = rank;
+            rankEl.className = "text-xl md:text-2xl mt-1 " + rankColor;
+
+            // ⭐️ ลบเงื่อนไขการซ่อนปุ่มออก ทำให้ปุ่มโชว์ทุกรอบไม่ว่าจะได้กี่คะแนนก็ตาม
+            document.getElementById('btn-save-img').classList.remove('hidden');
+        }
+
+        // ⭐️ ฟังก์ชันส่งข้อมูลเข้า Discord Webhook
+        function sendDiscordWebhook(name, finalScore) {
+            // ==========================================
+            // 🛑 คุณครูต้องนำลิงก์ Webhook จาก Discord มาวางตรงนี้ครับ 🛑
+            const webhookUrl = "https://discord.com/api/webhooks/1568096844867829785/SV48SsqmOvbPhdQ-OnrM6ihZGp-K-tWs_RUhWuycLxIkDYd3Ke8bIfznob-L42CL2H-_"; 
+            // ==========================================
+
+            if (webhookUrl === "https://discord.com/api/webhooks/1568096844867829785/SV48SsqmOvbPhdQ-OnrM6ihZGp-K-tWs_RUhWuycLxIkDYd3Ke8bIfznob-L42CL2H-_" || webhookUrl === "") {
+                console.log("ข้ามการส่ง Discord เนื่องจากยังไม่ได้ตั้งค่า Webhook URL");
+                return;
+            }
+
+            const payload = {
+                content: `🚨 **แจ้งเตือนผลคะแนนผู้เล่นจบเกม!**\n👤 ผู้เล่น: **${name}**\n🏆 คะแนนที่ได้: **${finalScore}** แต้ม`
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(response => {
+                if (response.ok) {
+                    console.log("ส่งคะแนนเข้า Discord สำเร็จ");
+                } else {
+                    console.error("ส่งคะแนนเข้า Discord ล้มเหลว", response.statusText);
+                }
+            }).catch(err => console.error("Error sending to Discord:", err));
+        }
+
+        // ฟังก์ชันการแคปหน้าจอรูป
+        function saveScoreImage() {
+            const btnSave = document.getElementById('btn-save-img');
+            btnSave.textContent = "⌛ SAVING & SENDING...";
+            
+            const captureArea = document.getElementById('capture-area');
+            const originalBorder = captureArea.style.border;
+            
+            captureArea.style.backgroundColor = "#09090b"; 
+            captureArea.style.border = "2px solid #10b981";
+
+            html2canvas(captureArea, {
+                scale: 2, 
+                backgroundColor: "#000000"
+            }).then(canvas => {
+                captureArea.style.backgroundColor = "";
+                captureArea.style.border = originalBorder;
+
+                // ดาวน์โหลดรูป
+                const link = document.createElement('a');
+                link.download = `FACTOR_OS_${playerName}_${score}PTS.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                // ⭐️ ส่งข้อมูลเข้า Discord ทันทีหลังจากแคปรูปเสร็จ
+                sendDiscordWebhook(playerName, score);
+
+                btnSave.textContent = "✅ SAVED & SENT!";
+                setTimeout(() => { btnSave.textContent = "📸 SAVE SCORE CARD"; }, 3000);
+
+            }).catch(err => {
+                console.error("Error capturing image: ", err);
+                alert("เกิดข้อผิดพลาดในการบันทึกภาพ กรุณาลองใหม่อีกครั้ง");
+                btnSave.textContent = "📸 SAVE SCORE CARD";
+            });
+        }
+
+        function clearMinigame() {
+            mgContainer.innerHTML = '';
+            if (mainTimer) clearInterval(mainTimer);
+            if (gridInterval) clearInterval(gridInterval);
+            if (glitchInterval) clearInterval(glitchInterval);
+            if (radarInterval) clearInterval(radarInterval);
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+        }
+
+        function generateWrongPairs(count) {
+            let wrongs = [];
+            let correctStr = [currentAnswers[0], currentAnswers[1]].sort((a,b)=>a-b).join(', ');
+            
+            while(wrongs.length < count) {
+                let r1 = Math.floor(Math.random() * 25) - 12;
+                let r2 = Math.floor(Math.random() * 25) - 12;
+                if (r1 === 0 || r2 === 0) continue;
+                
+                let pairStr = [r1, r2].sort((a,b)=>a-b).join(', ');
+                if (pairStr !== correctStr && !wrongs.includes(pairStr)) {
+                    wrongs.push(pairStr);
+                }
+            }
+            return wrongs;
+        }
+
+        // ==========================================
+        // 🎮 โค้ดมินิเกม 
+        // ==========================================
+
+        function loadMinigameKeypad() {
+            mgContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full max-w-[280px] md:max-w-[340px]" id="kp-container">
+                    <div class="text-xs md:text-sm mb-2 text-emerald-500">INPUT TWO FACTORS</div>
+                    <div class="w-full flex gap-2 mb-3">
+                        <div id="kp-disp-1" class="flex-1 bg-zinc-900 border-2 border-emerald-500 h-10 md:h-12 flex items-center justify-center text-lg md:text-xl font-bold text-white rounded-md">_</div>
+                        <div id="kp-disp-2" class="flex-1 bg-zinc-900 border-2 border-zinc-700 h-10 md:h-12 flex items-center justify-center text-lg md:text-xl font-bold text-white rounded-md">_</div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 w-full">
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md" data-val="1">1</button>
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md" data-val="2">2</button>
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md" data-val="3">3</button>
+                        <button class="kp-btn btn-retro h-10 md:h-12 text-red-500 font-bold rounded-md" data-val="DEL">DEL</button>
+                        
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md" data-val="4">4</button>
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md" data-val="5">5</button>
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md" data-val="6">6</button>
+                        <button class="kp-btn btn-retro h-10 md:h-12 text-yellow-500 font-bold rounded-md text-xs md:text-sm" data-val="NEXT">NEXT</button>
+                        
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md" data-val="7">7</button>
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md" data-val="8">8</button>
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md" data-val="9">9</button>
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md" data-val="-">-</button>
+                        
+                        <button class="kp-btn btn-retro h-10 md:h-12 font-bold rounded-md col-span-2" data-val="0">0</button>
+                        <button class="kp-btn btn-retro h-10 md:h-12 text-emerald-500 font-bold rounded-md col-span-2" data-val="ENTER">OK</button>
+                    </div>
+                </div>
+            `;
+            let val1 = "", val2 = "";
+            let active = 1;
+            const d1 = document.getElementById('kp-disp-1');
+            const d2 = document.getElementById('kp-disp-2');
+            const container = document.getElementById('kp-container');
+
+            function updateDisp() {
+                d1.textContent = val1 || "_";
+                d2.textContent = val2 || "_";
+                if(active === 1) {
+                    d1.classList.replace('border-zinc-700', 'border-emerald-500');
+                    d2.classList.replace('border-emerald-500', 'border-zinc-700');
+                } else {
+                    d2.classList.replace('border-zinc-700', 'border-emerald-500');
+                    d1.classList.replace('border-emerald-500', 'border-zinc-700');
+                }
+            }
+            
+            document.querySelectorAll('.kp-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if(isLocked) return;
+                    soundClick();
+                    let v = e.target.getAttribute('data-val');
+                    let currentVal = active === 1 ? val1 : val2;
+                    
+                    if (v === 'DEL') { 
+                        currentVal = currentVal.slice(0, -1); 
+                    } 
+                    else if (v === 'NEXT') {
+                        active = active === 1 ? 2 : 1;
+                    }
+                    else if (v === 'ENTER') {
+                        if (val1 !== "" && val1 !== "-" && val2 !== "" && val2 !== "-") {
+                            if(!evaluateAnswer([parseInt(val1), parseInt(val2)], container)) {
+                                val1 = ""; val2 = ""; active = 1;
+                            }
+                        }
+                    } 
+                    else if (v === '-') {
+                        if (currentVal === "") currentVal = "-";
+                    }
+                    else { 
+                        if (currentVal.length < 4) currentVal += v; 
+                    }
+
+                    if(v !== 'NEXT' && v !== 'ENTER') {
+                        if(active === 1) val1 = currentVal; else val2 = currentVal;
+                    }
+                    updateDisp();
+                });
+            });
+        }
+
+        function loadMinigameSlider() {
+            let correctStr = [currentAnswers[0], currentAnswers[1]].sort((a,b)=>a-b).join(', ');
+            let choices = generateWrongPairs(2);
+            choices.push(correctStr);
+            choices.sort(() => Math.random() - 0.5);
+            let correctIdx = choices.indexOf(correctStr);
+
+            mgContainer.innerHTML = `
+                <div class="w-full max-w-[340px] md:max-w-lg flex flex-col items-center" id="slider-container">
+                    <div class="text-xs md:text-sm mb-4 md:mb-6 text-emerald-500 text-center">TAP WHEN ALIGNED WITH CORRECT PAIR</div>
+                    <div class="relative w-full h-12 md:h-16 border border-emerald-800 bg-zinc-900 flex mb-6 md:mb-8 text-white overflow-hidden rounded-md">
+                        <div class="flex-1 border-r border-emerald-800 flex items-center justify-center text-sm md:text-lg font-bold opacity-80" id="zone-0">[${choices[0]}]</div>
+                        <div class="flex-1 border-r border-emerald-800 flex items-center justify-center text-sm md:text-lg font-bold opacity-80" id="zone-1">[${choices[1]}]</div>
+                        <div class="flex-1 flex items-center justify-center text-sm md:text-lg font-bold opacity-80" id="zone-2">[${choices[2]}]</div>
+                        <div id="slider-cursor" class="absolute top-0 left-0 h-full w-1 md:w-2 bg-white shadow-[0_0_8px_#fff]"></div>
+                    </div>
+                    <button id="slider-btn" class="btn-retro w-full py-3 md:py-4 text-xl md:text-2xl font-bold rounded-md">ENGAGE</button>
+                </div>
+            `;
+
+            const cursor = document.getElementById('slider-cursor');
+            const container = document.getElementById('slider-container');
+            let pos = 0;
+            let speed = 0.3 + (Math.random() * 0.4); 
+            let direction = 1;
+
+            function animate() {
+                if (isLocked) return;
+                pos += speed * direction;
+                if (pos >= 100) { pos = 100; direction = -1; }
+                if (pos <= 0) { pos = 0; direction = 1; }
+                cursor.style.left = `calc(${pos}% - 2px)`;
+                animationFrame = requestAnimationFrame(animate);
+            }
+            animate();
+
+            document.getElementById('slider-btn').addEventListener('click', () => {
+                if (isLocked) return;
+                let landedZone = (pos <= 33.33) ? 0 : (pos <= 66.66) ? 1 : 2;
+                if (!evaluateAnswer(choices[landedZone], container) && !isLocked) {
+                    let z = document.getElementById(`zone-${landedZone}`);
+                    z.classList.add('bg-red-900/50', 'text-red-500');
+                    setTimeout(() => z.classList.remove('bg-red-900/50', 'text-red-500'), 500);
+                }
+            });
+        }
+
+        function loadMinigameGrid() {
+            let correctStr = [currentAnswers[0], currentAnswers[1]].sort((a,b)=>a-b).join(', ');
+            let choices = generateWrongPairs(11);
+            choices.push(correctStr);
+            choices.sort(() => Math.random() - 0.5);
+
+            let gridHtml = choices.map(val => 
+                '<button class="grid-btn btn-retro h-12 md:h-14 text-sm md:text-base font-bold flex items-center justify-center px-1 rounded-md" data-val="' + val + '">[' + val + ']</button>'
+            ).join('');
+
+            mgContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full max-w-[320px] md:max-w-md" id="grid-container">
+                    <div class="text-xs md:text-sm mb-3 md:mb-4 text-emerald-500">LOCATE CORRECT PAIR</div>
+                    <div id="grid-board" class="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-3 w-full">
+                        ${gridHtml}
+                    </div>
+                </div>
+            `;
+            const board = document.getElementById('grid-board');
+            const container = document.getElementById('grid-container');
+            
+            function renderGrid() {
+                if (isLocked) return;
+                choices.sort(() => Math.random() - 0.5);
+                board.innerHTML = choices.map(val => 
+                    '<button class="grid-btn btn-retro h-12 md:h-14 text-sm md:text-base font-bold flex items-center justify-center px-1 rounded-md" data-val="' + val + '">[' + val + ']</button>'
+                ).join('');
+
+                document.querySelectorAll('.grid-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        if(isLocked) return;
+                        soundClick();
+                        if (!evaluateAnswer(e.target.getAttribute('data-val'), container)) {
+                            e.target.disabled = true;
+                        }
+                    });
+                });
+            }
+
+            document.querySelectorAll('.grid-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if(isLocked) return;
+                    soundClick();
+                    if (!evaluateAnswer(e.target.getAttribute('data-val'), container)) {
+                        e.target.disabled = true;
+                    }
+                });
+            });
+
+            let shuffleDelay = Math.max(2000, 4500 - (score / 5000) * 2500); 
+            gridInterval = setInterval(() => { if(!isLocked) { soundClick(); renderGrid(); } }, shuffleDelay); 
+        }
+
+        function loadMinigameWire() {
+            let correctStr = [currentAnswers[0], currentAnswers[1]].sort((a,b)=>a-b).join(', ');
+            let choices = generateWrongPairs(3);
+            choices.push(correctStr);
+            choices.sort(() => Math.random() - 0.5);
+            let colors = ['bg-red-600', 'bg-blue-600', 'bg-green-600', 'bg-yellow-500'];
+
+            let wiresHtml = choices.map((val, idx) => `
+                <div class="flex items-center gap-2 md:gap-4">
+                    <div class="w-16 md:w-24 text-right font-bold text-sm md:text-lg shrink-0">[${val}]</div>
+                    <button class="wire-btn btn-retro flex-1 h-6 md:h-8 ${colors[idx]} rounded-full border-y-2 border-black/50 shadow-lg cursor-pointer" data-val="${val}"></button>
+                    <div class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-zinc-800 border-2 border-zinc-600 shrink-0"></div>
+                </div>
+            `).join('');
+
+            mgContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full max-w-[320px] md:max-w-md" id="wire-container">
+                    <div class="text-xs md:text-sm mb-4 md:mb-6 text-emerald-500">CUT THE CORRECT WIRE</div>
+                    <div class="flex flex-col gap-3 md:gap-4 w-full">
+                        ${wiresHtml}
+                    </div>
+                </div>
+            `;
+            const container = document.getElementById('wire-container');
+            document.querySelectorAll('.wire-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (isLocked) return;
+                    let isCorrect = evaluateAnswer(e.target.getAttribute('data-val'), container);
+                    if (!isCorrect && !isLocked) {
+                        e.target.classList.add('opacity-20', 'pointer-events-none');
+                        e.target.style.backgroundColor = '#ef4444';
+                    } else if (isCorrect) {
+                        e.target.classList.add('opacity-0'); 
+                    }
+                });
+            });
+        }
+
+        function loadMinigameTune() {
+            mgContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full max-w-[280px] md:max-w-sm" id="tune-container">
+                    <div class="text-xs md:text-sm mb-4 md:mb-6 text-emerald-500 text-center">TUNE BOTH FACTORS</div>
+                    <div class="bg-zinc-900 border border-emerald-800 w-full p-4 flex flex-col gap-4 mb-4 md:mb-6 rounded-lg">
+                        <div class="flex items-center gap-3 w-full">
+                            <div class="w-10 text-right font-bold text-emerald-400 text-lg md:text-xl" id="tune-disp-1">0</div>
+                            <input type="range" id="tune-1" min="-12" max="12" value="0" class="flex-1 accent-emerald-500">
+                        </div>
+                        <div class="flex items-center gap-3 w-full">
+                            <div class="w-10 text-right font-bold text-emerald-400 text-lg md:text-xl" id="tune-disp-2">0</div>
+                            <input type="range" id="tune-2" min="-12" max="12" value="0" class="flex-1 accent-emerald-500">
+                        </div>
+                    </div>
+                    <button id="tune-submit" class="btn-retro w-full py-3 md:py-4 text-xl md:text-2xl font-bold rounded-lg">TRANSMIT</button>
+                </div>
+            `;
+            const container = document.getElementById('tune-container');
+            const s1 = document.getElementById('tune-1');
+            const s2 = document.getElementById('tune-2');
+            const d1 = document.getElementById('tune-disp-1');
+            const d2 = document.getElementById('tune-disp-2');
+            
+            s1.value = Math.floor(Math.random() * 25) - 12; 
+            s2.value = Math.floor(Math.random() * 25) - 12; 
+            d1.textContent = s1.value;
+            d2.textContent = s2.value;
+
+            s1.addEventListener('input', (e) => { d1.textContent = e.target.value; soundClick(); });
+            s2.addEventListener('input', (e) => { d2.textContent = e.target.value; soundClick(); });
+            
+            document.getElementById('tune-submit').addEventListener('click', () => {
+                if (isLocked) return;
+                if (!evaluateAnswer([parseInt(s1.value), parseInt(s2.value)], container) && !isLocked) {
+                    d1.classList.replace('text-emerald-400', 'text-red-500');
+                    d2.classList.replace('text-emerald-400', 'text-red-500');
+                    setTimeout(() => {
+                        d1.classList.replace('text-red-500', 'text-emerald-400');
+                        d2.classList.replace('text-red-500', 'text-emerald-400');
+                    }, 500);
+                }
+            });
+        }
+
+        function loadMinigameSafeDial() {
+            mgContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full max-w-[280px] md:max-w-sm" id="safedial-container">
+                    <div class="text-xs md:text-sm mb-4 md:mb-6 text-emerald-500 text-center">SPIN BOTH DIALS</div>
+                    <div class="w-full flex flex-col gap-3 mb-6">
+                        <div class="flex justify-between items-center w-full">
+                            <button id="sd1-left" class="btn-retro w-12 h-12 md:w-16 md:h-14 text-xl font-bold rounded-lg">◀</button>
+                            <div class="flex-1 mx-3 bg-black rounded-xl flex items-center justify-center border-4 border-zinc-800 h-12 md:h-14 shadow-inner">
+                                <span id="sd1-display" class="text-2xl md:text-3xl font-bold text-emerald-400">0</span>
+                            </div>
+                            <button id="sd1-right" class="btn-retro w-12 h-12 md:w-16 md:h-14 text-xl font-bold rounded-lg">▶</button>
+                        </div>
+                        <div class="flex justify-between items-center w-full">
+                            <button id="sd2-left" class="btn-retro w-12 h-12 md:w-16 md:h-14 text-xl font-bold rounded-lg">◀</button>
+                            <div class="flex-1 mx-3 bg-black rounded-xl flex items-center justify-center border-4 border-zinc-800 h-12 md:h-14 shadow-inner">
+                                <span id="sd2-display" class="text-2xl md:text-3xl font-bold text-emerald-400">0</span>
+                            </div>
+                            <button id="sd2-right" class="btn-retro w-12 h-12 md:w-16 md:h-14 text-xl font-bold rounded-lg">▶</button>
+                        </div>
+                    </div>
+                    <button id="safedial-submit" class="btn-retro w-full py-3 md:py-4 text-xl md:text-2xl font-bold rounded-lg">UNLOCK</button>
+                </div>
+            `;
+            
+            const container = document.getElementById('safedial-container');
+            const d1 = document.getElementById('sd1-display');
+            const d2 = document.getElementById('sd2-display');
+            
+            let v1 = Math.floor(Math.random() * 25) - 12;
+            let v2 = Math.floor(Math.random() * 25) - 12;
+            d1.textContent = v1;
+            d2.textContent = v2;
+
+            document.getElementById('sd1-left').addEventListener('click', () => {
+                if (isLocked) return; soundTick();
+                v1--; if(v1 < -12) v1 = 12; d1.textContent = v1;
+            });
+            document.getElementById('sd1-right').addEventListener('click', () => {
+                if (isLocked) return; soundTick();
+                v1++; if(v1 > 12) v1 = -12; d1.textContent = v1;
+            });
+            document.getElementById('sd2-left').addEventListener('click', () => {
+                if (isLocked) return; soundTick();
+                v2--; if(v2 < -12) v2 = 12; d2.textContent = v2;
+            });
+            document.getElementById('sd2-right').addEventListener('click', () => {
+                if (isLocked) return; soundTick();
+                v2++; if(v2 > 12) v2 = -12; d2.textContent = v2;
+            });
+
+            document.getElementById('safedial-submit').addEventListener('click', () => {
+                if (isLocked) return;
+                if (!evaluateAnswer([v1, v2], container) && !isLocked) {
+                    d1.classList.replace('text-emerald-400', 'text-red-500');
+                    d2.classList.replace('text-emerald-400', 'text-red-500');
+                    setTimeout(() => {
+                        d1.classList.replace('text-red-500', 'text-emerald-400');
+                        d2.classList.replace('text-red-500', 'text-emerald-400');
+                    }, 500);
+                }
+            });
+        }
+
+        function loadMinigameIntercept() {
+            let correctStr = [currentAnswers[0], currentAnswers[1]].sort((a,b)=>a-b).join(', ');
+            let choices = generateWrongPairs(3);
+            choices.push(correctStr);
+            choices.sort(() => Math.random() - 0.5);
+
+            let interceptHtml = choices.map((val) => {
+                let duration = (2.5 + Math.random() * 2.5).toFixed(2);
+                let delay = (Math.random() * -2).toFixed(2); 
+                return `
+                <div class="relative w-full h-12 md:h-14 bg-zinc-900 border border-emerald-900/50 overflow-hidden rounded-md">
+                    <button class="intercept-btn btn-retro absolute top-0 h-full w-24 md:w-32 bg-emerald-600 text-black font-bold text-sm md:text-lg flex items-center justify-center shadow-[0_0_8px_#10b981]" 
+                            style="animation: moveLeftRight ${duration}s linear ${delay}s alternate infinite;" 
+                            data-val="${val}">
+                        [${val}]
+                    </button>
+                </div>
+                `;
+            }).join('');
+
+            mgContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full max-w-[320px] md:max-w-md" id="intercept-container">
+                    <div class="text-xs md:text-sm mb-4 md:mb-6 text-emerald-500 text-center">INTERCEPT CORRECT PAIR</div>
+                    <div class="w-full flex flex-col gap-2 md:gap-3">
+                        ${interceptHtml}
+                    </div>
+                </div>
+            `;
+            const container = document.getElementById('intercept-container');
+            document.querySelectorAll('.intercept-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (isLocked) return;
+                    let isCorrect = evaluateAnswer(e.target.getAttribute('data-val'), container);
+                    if (!isCorrect && !isLocked) {
+                        e.target.classList.add('opacity-30', 'pointer-events-none');
+                        e.target.style.backgroundColor = '#ef4444';
+                        e.target.style.boxShadow = 'none';
+                    } else if (isCorrect) {
+                        e.target.style.animationPlayState = 'paused'; 
+                        e.target.style.backgroundColor = '#22c55e';
+                    }
+                });
+            });
+        }
+
+        function loadMinigameFirewall() {
+            let correctStr = [currentAnswers[0], currentAnswers[1]].sort((a,b)=>a-b).join(', ');
+            let choices = generateWrongPairs(4);
+            choices.push(correctStr);
+            choices.sort(() => Math.random() - 0.5);
+
+            let firewallHtml = choices.map((val, idx) => {
+                let duration = (4.0 + Math.random() * 3.5).toFixed(2);
+                let delay = (Math.random() * -3).toFixed(2); 
+                let leftPos = (2 + (idx * 21)); 
+                return `
+                <button class="firewall-btn btn-retro absolute w-20 md:w-24 h-10 md:h-12 bg-zinc-800 border-2 border-emerald-600 text-emerald-400 font-bold text-xs md:text-sm flex items-center justify-center shadow-lg rounded-md" 
+                        style="left: ${leftPos}%; animation: fallDown ${duration}s linear ${delay}s infinite;" 
+                        data-val="${val}">
+                    [${val}]
+                </button>
+                `;
+            }).join('');
+
+            mgContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full h-full relative" id="firewall-container">
+                    <div class="absolute top-2 w-full text-center text-[10px] md:text-sm text-emerald-500 z-20 pointer-events-none">DEFEND FIREWALL (SHOOT CORRECT PAIR)</div>
+                    <div class="absolute bottom-0 w-full h-8 bg-red-900/30 border-t-2 border-red-500 flex items-center justify-center text-xs text-red-500 z-10 pointer-events-none">FIREWALL LINE</div>
+                    <div id="blocks-area" class="w-full h-full relative overflow-hidden mt-8">
+                        ${firewallHtml}
+                    </div>
+                </div>
+            `;
+            const container = document.getElementById('firewall-container');
+            document.querySelectorAll('.firewall-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (isLocked) return;
+                    let isCorrect = evaluateAnswer(e.target.getAttribute('data-val'), container);
+                    if (!isCorrect && !isLocked) {
+                        e.target.classList.add('opacity-0', 'pointer-events-none');
+                    } else if (isCorrect) {
+                        e.target.style.animationPlayState = 'paused';
+                        e.target.style.backgroundColor = '#22c55e';
+                        e.target.style.color = '#000';
+                    }
+                });
+            });
+        }
+
+        function loadMinigameRadar() {
+            let correctStr = [currentAnswers[0], currentAnswers[1]].sort((a,b)=>a-b).join(', ');
+            let choices = generateWrongPairs(3);
+            choices.push(correctStr);
+            choices.sort(() => Math.random() - 0.5);
+
+            let radarHtml = choices.map((val, idx) => `
+                <button class="radar-btn btn-retro absolute w-24 h-12 md:w-28 md:h-16 text-sm md:text-base font-bold flex items-center justify-center opacity-0 transition-opacity duration-200 rounded-xl" 
+                        style="${idx===0?'top:15%;left:10%':idx===1?'top:25%;right:5%':idx===2?'bottom:20%;left:5%':'bottom:15%;right:10%'}"
+                        data-val="${val}">
+                    [${val}]
+                </button>
+            `).join('');
+
+            mgContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full max-w-[280px] md:max-w-sm" id="radar-container">
+                    <div class="text-[10px] md:text-sm mb-3 text-emerald-500 text-center">RADAR SWEEP (FIND TARGET IN DARK)</div>
+                    <div class="grid grid-cols-2 gap-4 w-full h-48 md:h-64 relative bg-zinc-950 border-2 border-zinc-800 p-4 rounded-full overflow-hidden">
+                        ${radarHtml}
+                    </div>
+                </div>
+            `;
+            const container = document.getElementById('radar-container');
+            const buttons = document.querySelectorAll('.radar-btn');
+            
+            radarInterval = setInterval(() => {
+                if (isLocked) return;
+                let randIdx = Math.floor(Math.random() * buttons.length);
+                let btn = buttons[randIdx];
+                if (!btn.disabled) {
+                    btn.classList.replace('opacity-0', 'opacity-100');
+                    soundBlip();
+                    setTimeout(() => {
+                        if (!isLocked) {
+                            btn.classList.replace('opacity-100', 'opacity-0');
+                        }
+                    }, 800); 
+                }
+            }, 1200);
+
+            buttons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (isLocked) return;
+                    let isCorrect = evaluateAnswer(e.target.getAttribute('data-val'), container);
+                    if (!isCorrect && !isLocked) {
+                        e.target.disabled = true;
+                    } else if (isCorrect) {
+                        e.target.classList.replace('opacity-0', 'opacity-100');
+                        e.target.style.backgroundColor = '#22c55e';
+                        e.target.style.color = '#000';
+                    }
+                });
+            });
+        }
+
+        function loadMinigameGlitch() {
+            let correctStr = [currentAnswers[0], currentAnswers[1]].sort((a,b)=>a-b).join(', ');
+            let choices = generateWrongPairs(3);
+            choices.push(correctStr);
+            choices.sort(() => Math.random() - 0.5);
+
+            let glitchHtml = choices.map((val, idx) => `
+                <button class="glitch-btn btn-retro h-16 md:h-20 text-base md:text-xl font-bold flex items-center justify-center rounded-lg" 
+                        id="glitch-btn-${idx}" data-val="${val}">
+                    [${val}]
+                </button>
+            `).join('');
+
+            mgContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full max-w-[280px] md:max-w-sm" id="glitch-container">
+                    <div class="text-[10px] md:text-sm mb-4 text-emerald-500 text-center">GLITCH CODE (FIND THE STABLE DATA)</div>
+                    <div class="grid grid-cols-2 gap-3 w-full">
+                        ${glitchHtml}
+                    </div>
+                </div>
+            `;
+            const container = document.getElementById('glitch-container');
+            const symbols = ['#@!', 'XX', '???', '0x0', '%&', '--'];
+            
+            glitchInterval = setInterval(() => {
+                if (isLocked) return;
+                document.querySelectorAll('.glitch-btn').forEach(btn => {
+                    if (btn.disabled) return;
+                    if (Math.random() < 0.4) {
+                        btn.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                        btn.classList.add('text-red-400', 'italic');
+                        soundBlip();
+                    } else {
+                        btn.textContent = `[${btn.getAttribute('data-val')}]`;
+                        btn.classList.remove('text-red-400', 'italic');
+                    }
+                });
+            }, 600); 
+
+            document.querySelectorAll('.glitch-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (isLocked) return;
+                    e.target.textContent = `[${e.target.getAttribute('data-val')}]`; 
+                    let isCorrect = evaluateAnswer(e.target.getAttribute('data-val'), container);
+                    if (!isCorrect && !isLocked) {
+                        e.target.disabled = true;
+                        e.target.classList.add('opacity-30', 'pointer-events-none');
+                    }
+                });
+            });
+        }
+
+        function loadMinigameVault() {
+            let signs = ['+', '-'];
+            let tens = [0, 1]; 
+            let ones = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+            
+            mgContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full max-w-[240px] md:max-w-xs" id="vault-container">
+                    <div class="text-[10px] md:text-sm mb-4 text-emerald-500 text-center">SECURE VAULT (SET FACTOR)</div>
+                    <div class="flex gap-2 md:gap-4 mb-6">
+                        <div class="flex flex-col items-center">
+                            <button class="v-up btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="0">▲</button>
+                            <div class="v-char text-3xl md:text-5xl font-bold bg-zinc-900 border border-emerald-800 w-12 md:w-16 h-16 md:h-20 flex items-center justify-center my-2 text-white rounded-md" id="v-0">+</div>
+                            <button class="v-down btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="0">▼</button>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <button class="v-up btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="1">▲</button>
+                            <div class="v-char text-3xl md:text-5xl font-bold bg-zinc-900 border border-emerald-800 w-12 md:w-16 h-16 md:h-20 flex items-center justify-center my-2 text-white rounded-md" id="v-1">0</div>
+                            <button class="v-down btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="1">▼</button>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <button class="v-up btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="2">▲</button>
+                            <div class="v-char text-3xl md:text-5xl font-bold bg-zinc-900 border border-emerald-800 w-12 md:w-16 h-16 md:h-20 flex items-center justify-center my-2 text-white rounded-md" id="v-2">0</div>
+                            <button class="v-down btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="2">▼</button>
+                        </div>
+                    </div>
+                    <button id="vault-submit" class="btn-retro w-full py-3 md:py-4 text-xl md:text-2xl font-bold rounded-lg">UNLOCK</button>
+                </div>
+            `;
+            const container = document.getElementById('vault-container');
+            let vIdx = [0, 0, 0]; 
+
+            function updateDisplay() {
+                document.getElementById('v-0').textContent = signs[vIdx[0]];
+                document.getElementById('v-1').textContent = tens[vIdx[1]];
+                document.getElementById('v-2').textContent = ones[vIdx[2]];
+            }
+
+            document.querySelectorAll('.v-up').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (isLocked) return;
+                    soundClick();
+                    let i = parseInt(e.target.getAttribute('data-idx'));
+                    if(i === 0) vIdx[0] = (vIdx[0] + 1) % 2;
+                    if(i === 1) vIdx[1] = (vIdx[1] + 1) % 2; 
+                    if(i === 2) vIdx[2] = (vIdx[2] + 1) % 10;
+                    updateDisplay();
+                });
+            });
+            document.querySelectorAll('.v-down').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    if (isLocked) return;
+                    soundClick();
+                    let i = parseInt(e.target.getAttribute('data-idx'));
+                    if(i === 0) vIdx[0] = (vIdx[0] - 1 + 2) % 2;
+                    if(i === 1) vIdx[1] = (vIdx[1] - 1 + 2) % 2; 
+                    if(i === 2) vIdx[2] = (vIdx[2] - 1 + 10) % 10;
+                    updateDisplay();
+                });
+            });
+
+            document.getElementById('vault-submit').addEventListener('click', () => {
+                if (isLocked) return;
+                let finalValue = (vIdx[0] === 1 ? -1 : 1) * ((tens[vIdx[1]] * 10) + ones[vIdx[2]]);
+                evaluateAnswer(finalValue, container); 
+            });
+        }
+    </script>
+</body>
+</html>

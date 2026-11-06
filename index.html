@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>FACTOR_OS: POLYNOMIAL HACKER (V9.6 WEBHOOK)</title>
+    <title>FACTOR_OS: POLYNOMIAL HACKER (V10.0 MULTI-MODE)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -69,6 +69,32 @@
             @keyframes moveLeftRight { 0% { left: 0%; } 100% { left: calc(100% - 7rem); } }
         }
         @keyframes fallDown { 0% { top: -20%; } 100% { top: 120%; } }
+
+        /* Custom Checkbox */
+        .checkbox-retro {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #34d399;
+            background-color: #022c22;
+            border-radius: 4px;
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+        }
+        .checkbox-retro:checked {
+            background-color: #34d399;
+        }
+        .checkbox-retro:checked::after {
+            content: '✓';
+            color: #000;
+            font-size: 16px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     </style>
 </head>
 <body class="h-[100dvh] w-screen flex items-center justify-center relative p-2 md:p-4">
@@ -80,7 +106,7 @@
         <div class="flex justify-between items-end border-b-2 border-emerald-500 pb-2 mb-3 md:mb-4 uppercase shrink-0">
             <div>
                 <h1 class="text-xl md:text-3xl font-bold tracking-widest leading-none text-emerald-400">FACTOR_OS</h1>
-                <p class="text-[10px] md:text-xs text-emerald-700 mt-1">SYS V.9.6 // WEBHOOK INTEGRATED</p>
+                <p class="text-[10px] md:text-xs text-emerald-700 mt-1">SYS V.10.0 // MULTI-MODE EDITION</p>
             </div>
             <div class="text-right">
                 <div class="text-sm md:text-xl text-emerald-500">SCORE: <br class="block md:hidden"><span id="ui-score" class="text-xl md:text-3xl font-bold text-white">0000</span></div>
@@ -88,21 +114,32 @@
         </div>
 
         <!-- MENU SCREEN -->
-        <div id="screen-menu" class="flex-1 flex flex-col items-center justify-center overflow-y-auto z-20 relative">
-            <div class="text-5xl md:text-6xl mb-4 text-emerald-300">∛</div>
-            <p class="mb-4 text-center text-sm md:text-lg max-w-lg leading-relaxed px-2 text-zinc-300 pointer-events-none">
-                ระบบคำนวณถูกล็อค! <br>
-                <span class="text-emerald-400 font-bold">ภารกิจ: แยกตัวประกอบพหุนาม</span><br>
-                <span class="text-emerald-400 text-[11px] md:text-base block mt-2 border border-emerald-800 p-3 md:p-4 bg-zinc-900/80 rounded-lg">
-                    - หา <span class="text-yellow-400 font-bold">2 ตัวเลข</span> ที่คูณและบวกกันได้ตามเป้าหมาย<br>
-                    - พลาดได้ไม่เกิน 2 ครั้งต่อสมการ<br>
-                    - เวลาเริ่ม 60 วิ บีบเร็วสุดเหลือ 20 วิ<br>
-                    - <span class="text-white font-bold">เล่นจบกดบันทึกคะแนนส่งครูได้เลย!</span>
-                </span>
-            </p>
+        <div id="screen-menu" class="flex-1 flex flex-col items-center justify-center overflow-y-auto z-20 relative px-2">
+            <div class="text-5xl md:text-6xl mb-2 text-emerald-300">∛</div>
             
-            <input type="text" id="player-name" placeholder="กรอกชื่อ-สกุล ก่อนเริ่มเกม..." class="w-full max-w-xs mb-4 p-3 text-center bg-zinc-900 border-2 border-emerald-600 text-emerald-400 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder-emerald-800 transition-all z-30 relative" autocomplete="off" spellcheck="false">
+            <input type="text" id="player-name" placeholder="กรอกชื่อ-สกุล ก่อนเริ่มเกม..." class="w-full max-w-xs my-4 p-3 text-center bg-zinc-900 border-2 border-emerald-600 text-emerald-400 font-bold rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 placeholder-emerald-800 transition-all z-30 relative" autocomplete="off" spellcheck="false">
             
+            <!-- ⭐️ เมนูเลือกโหมดสมการ -->
+            <div class="w-full max-w-xs mb-6 bg-zinc-900/80 border border-emerald-800 p-4 rounded-lg flex flex-col gap-3">
+                <div class="text-yellow-400 text-xs md:text-sm font-bold border-b border-emerald-800 pb-2 mb-1">DATA MODULES (เลือกอย่างน้อย 1 โหมด)</div>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="mode-normal" checked class="checkbox-retro">
+                    <span class="text-sm md:text-base text-emerald-300">ทั่วไป (a = 1)</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="mode-diff" class="checkbox-retro">
+                    <span class="text-sm md:text-base text-emerald-300">ผลต่างกำลังสอง</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="mode-perf" class="checkbox-retro">
+                    <span class="text-sm md:text-base text-emerald-300">กำลังสองสมบูรณ์</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="mode-adv" class="checkbox-retro">
+                    <span class="text-sm md:text-base text-emerald-300">ขั้นสูง (a > 1)</span>
+                </label>
+            </div>
+
             <button id="btn-start" class="btn-retro px-8 py-3 text-xl md:text-2xl font-bold w-full md:w-auto max-w-xs shadow-[0_0_15px_#10b981] rounded-lg z-30">
                 INITIATE HACK
             </button>
@@ -118,9 +155,9 @@
             <div class="flex flex-col md:flex-row gap-2 md:gap-4 mb-3 shrink-0 pointer-events-none">
                 <div class="bg-zinc-900 border border-emerald-700 p-2 md:p-4 flex-1 text-center relative flex flex-col justify-center shadow-inner rounded-lg">
                     <div id="target-category" class="text-[10px] md:text-xs text-yellow-400 mb-1">คูณกันได้ C | บวกกันได้ B</div>
-                    <div id="target-word" class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-widest text-white">x² + bx + c</div>
+                    <div id="target-word" class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-widest text-white whitespace-nowrap overflow-hidden">x² + bx + c</div>
                 </div>
-                <div class="bg-zinc-900 border border-red-900 p-2 md:p-4 w-full md:w-48 text-center flex flex-row md:flex-col justify-center items-center gap-2 md:gap-0 rounded-lg">
+                <div class="bg-zinc-900 border border-red-900 p-2 md:p-4 w-full md:w-48 text-center flex flex-row md:flex-col justify-center items-center gap-2 md:gap-0 rounded-lg shrink-0">
                     <div class="text-[10px] md:text-xs text-red-500 md:mb-1">LOCAL ERRORS:</div>
                     <div id="ui-strikes" class="text-xl md:text-3xl font-bold text-red-500 tracking-widest">0/2</div>
                 </div>
@@ -147,11 +184,10 @@
                     <div class="text-xs text-emerald-600 mb-1 tracking-widest">RANK EVALUATION</div>
                     <div id="final-rank" class="text-2xl font-bold text-emerald-400">-</div>
                 </div>
-                <div class="text-[10px] text-zinc-600 font-mono pointer-events-none">FACTOR_OS // V9.6 AUTHENTICATED</div>
+                <div class="text-[10px] text-zinc-600 font-mono pointer-events-none">FACTOR_OS // V10.0 AUTHENTICATED</div>
             </div>
 
             <div class="mt-6 flex flex-col gap-3 w-full max-w-xs">
-                <!-- ⭐️ ปุ่มเซฟรูปจะแสดงตลอดแล้วในเวอร์ชันนี้ -->
                 <button id="btn-save-img" class="btn-retro px-8 py-3 text-lg font-bold rounded-lg bg-emerald-900/50 text-emerald-300 border-emerald-400 hover:bg-emerald-600 hover:text-black">
                     📸 SAVE SCORE CARD
                 </button>
@@ -228,24 +264,97 @@
         const targetWord = document.getElementById('target-word');
         const targetCategory = document.getElementById('target-category');
 
-        function generatePolynomial() {
-            let m, n;
-            do {
-                m = Math.floor(Math.random() * 25) - 12; 
-                n = Math.floor(Math.random() * 25) - 12; 
-            } while (m === 0 || n === 0); 
-
-            let b = m + n;
-            let c = m * n;
+        // ⭐️ อ่านโหมดที่ถูกเลือกจากหน้าแรก
+        function getSelectedModes() {
+            let modes = [];
+            if (document.getElementById('mode-normal').checked) modes.push('normal');
+            if (document.getElementById('mode-diff').checked) modes.push('diff_square');
+            if (document.getElementById('mode-perf').checked) modes.push('perfect_square');
+            if (document.getElementById('mode-adv').checked) modes.push('adv');
             
-            return { m, n, b, c };
+            if (modes.length === 0) {
+                document.getElementById('mode-normal').checked = true;
+                modes = ['normal'];
+            }
+            return modes;
         }
 
-        function formatPolynomial(b, c) {
-            let bStr = b === 1 ? "+ x" : b === -1 ? "- x" : b > 0 ? `+ ${b}x` : (b < 0 ? `- ${Math.abs(b)}x` : "");
-            let cStr = c > 0 ? `+ ${c}` : (c < 0 ? `- ${Math.abs(c)}` : "");
-            if (b === 0) bStr = ""; 
-            let eq = `x² ${bStr} ${cStr}`.trim();
+        // ⭐️ สุ่มสมการตามโหมดที่เลือก (คัดกรองให้คำตอบ m, n อยู่ในสเกล -12 ถึง 12 เสมอ)
+        function generatePolynomial(activeModes) {
+            let mode = activeModes[Math.floor(Math.random() * activeModes.length)];
+            let m, n, a=1, b, c;
+
+            if (mode === 'diff_square') {
+                // ผลต่างกำลังสอง: (x - m)(x + m) -> x^2 - m^2
+                m = Math.floor(Math.random() * 12) + 1; // 1 ถึง 12
+                n = -m;
+                a = 1;
+                b = 0;
+                c = - (m * m);
+            } 
+            else if (mode === 'perfect_square') {
+                // กำลังสองสมบูรณ์: (x + m)(x + m) -> x^2 + 2mx + m^2
+                m = Math.floor(Math.random() * 25) - 12;
+                if(m === 0) m = 1;
+                n = m;
+                a = 1;
+                b = 2 * m;
+                c = m * m;
+            } 
+            else if (mode === 'adv') {
+                // a > 1: สุ่มคำตอบ m, n แล้วหาตัวประกอบ A, C ที่สอดคล้อง
+                do {
+                    m = Math.floor(Math.random() * 25) - 12;
+                    n = Math.floor(Math.random() * 25) - 12;
+                    let P = m * n;
+                    if (P === 0) continue;
+                    
+                    let absP = Math.abs(P);
+                    if (absP <= 1) continue; // P ต้องมีตัวประกอบมากกว่า 1 ตัว
+                    
+                    let factors = [];
+                    for(let i=2; i<=absP; i++) {
+                        if(absP % i === 0) factors.push(i);
+                    }
+                    if(factors.length === 0) continue;
+                    
+                    a = factors[Math.floor(Math.random() * factors.length)];
+                    c = P / a; // P = a*c
+                    b = m + n;
+                } while (a <= 1); // บังคับ a > 1 เสมอ
+            } 
+            else { 
+                // ทั่วไป (a=1): สุ่ม m, n ปกติ
+                do {
+                    m = Math.floor(Math.random() * 25) - 12; 
+                    n = Math.floor(Math.random() * 25) - 12; 
+                } while (m === 0 || n === 0);
+                a = 1;
+                b = m + n;
+                c = m * n;
+            }
+
+            return { m, n, a, b, c };
+        }
+
+        // ⭐️ รูปแบบการแสดงผลสมการรองรับ a > 1 
+        function formatPolynomial(a, b, c) {
+            let aStr = "";
+            if (a === 1) aStr = "x²";
+            else if (a === -1) aStr = "-x²";
+            else aStr = a + "x²";
+
+            let bStr = "";
+            if (b === 1) bStr = "+ x";
+            else if (b === -1) bStr = "- x";
+            else if (b > 0) bStr = "+ " + b + "x";
+            else if (b < 0) bStr = "- " + Math.abs(b) + "x";
+
+            let cStr = "";
+            if (c > 0) cStr = "+ " + c;
+            else if (c < 0) cStr = "- " + Math.abs(c);
+
+            let eq = `${aStr} ${bStr} ${cStr}`.trim();
             return eq;
         }
 
@@ -253,11 +362,14 @@
             const nameInput = document.getElementById('player-name');
             playerName = nameInput.value.trim(); 
             
+            // ตรวจสอบชื่อ
             if (!playerName) {
                 nameInput.classList.add('shake-anim', 'border-red-500');
                 setTimeout(() => nameInput.classList.remove('shake-anim', 'border-red-500'), 500);
                 return;
             }
+            
+            // ตรวจสอบการเลือกโหมด (ถ้าไม่เลือกเลยระบบ getSelectedModes จะตั้งให้เป็น normal อัตโนมัติแล้ว)
             startGame();
         }
 
@@ -281,7 +393,10 @@
             screenMenu.classList.remove('hidden');
             document.getElementById('player-name').value = ""; 
             playerName = "";
-            document.getElementById('btn-save-img').textContent = "📸 SAVE SCORE CARD"; // รีเซ็ตข้อความปุ่ม
+            
+            const btnSave = document.getElementById('btn-save-img');
+            btnSave.textContent = "📸 SAVE SCORE CARD"; 
+            btnSave.disabled = false;
         }
 
         function updateUI() {
@@ -302,11 +417,15 @@
             ];
             const selectedGame = games[Math.floor(Math.random() * games.length)];
             
-            let poly = generatePolynomial();
+            let activeModes = getSelectedModes();
+            let poly = generatePolynomial(activeModes);
+            
             currentAnswers = [poly.m, poly.n]; 
             
-            targetCategory.textContent = `คูณกันได้ ${poly.c} | บวกกันได้ ${poly.b}`;
-            targetWord.textContent = formatPolynomial(poly.b, poly.c);
+            // ⭐️ ปรับคำใบ้ให้สอดคล้องกับ a > 1 (หาเลขที่คูณกันได้ ac)
+            let acProduct = poly.a * poly.c;
+            targetCategory.textContent = `คูณกันได้ ${acProduct} | บวกกันได้ ${poly.b}`;
+            targetWord.textContent = formatPolynomial(poly.a, poly.b, poly.c);
             
             targetWord.classList.remove('success-text', 'danger-text');
             targetWord.classList.add('text-white');
@@ -362,7 +481,7 @@
                 score += pointsEarned;
                 
                 targetWord.textContent = `[${currentAnswers[0]}, ${currentAnswers[1]}] (+${pointsEarned})`; 
-                targetWord.classList.remove('text-white', 'text-3xl', 'sm:text-4xl', 'md:text-5xl');
+                targetWord.classList.remove('text-white', 'text-2xl', 'sm:text-3xl', 'md:text-4xl', 'lg:text-5xl');
                 targetWord.classList.add('success-text', 'text-3xl', 'md:text-5xl');
                 setTimeout(nextRound, 1500);
             } else {
@@ -379,7 +498,7 @@
                     clearInterval(mainTimer);
                     soundFail();
                     targetWord.textContent = `ANS: ${currentAnswers[0]}, ${currentAnswers[1]}`;
-                    targetWord.classList.remove('text-white', 'text-3xl', 'sm:text-4xl', 'md:text-5xl');
+                    targetWord.classList.remove('text-white', 'text-2xl', 'sm:text-3xl', 'md:text-4xl', 'lg:text-5xl');
                     targetWord.classList.add('danger-text', 'text-3xl', 'md:text-5xl');
                     setTimeout(gameOver, 2500); 
                 } else {
@@ -394,8 +513,8 @@
             isLocked = true;
             soundFail();
             targetWord.textContent = `ANS: ${currentAnswers[0]}, ${currentAnswers[1]}`; 
-            targetWord.classList.remove('text-white');
-            targetWord.classList.add('danger-text');
+            targetWord.classList.remove('text-white', 'text-2xl', 'sm:text-3xl', 'md:text-4xl', 'lg:text-5xl');
+            targetWord.classList.add('danger-text', 'text-3xl', 'md:text-5xl');
             setTimeout(gameOver, 2500);
         }
 
@@ -420,43 +539,50 @@
             rankEl.textContent = rank;
             rankEl.className = "text-xl md:text-2xl mt-1 " + rankColor;
 
-            // ⭐️ ลบเงื่อนไขการซ่อนปุ่มออก ทำให้ปุ่มโชว์ทุกรอบไม่ว่าจะได้กี่คะแนนก็ตาม
             document.getElementById('btn-save-img').classList.remove('hidden');
         }
 
-        // ⭐️ ฟังก์ชันส่งข้อมูลเข้า Discord Webhook
-        function sendDiscordWebhook(name, finalScore) {
+        // ==========================================
+        // 🚨 แจ้งเตือนเข้า DISCORD พร้อมรูปภาพ (ใช้งาน FormData)
+        // ==========================================
+        function sendDiscordWebhook(name, finalScore, imageBlob) {
             // ==========================================
-            // 🛑 คุณครูต้องนำลิงก์ Webhook จาก Discord มาวางตรงนี้ครับ 🛑
+            // 🛑 เอาลิงก์ Webhook วางตรงนี้ครับ 🛑
             const webhookUrl = "https://discord.com/api/webhooks/1568096844867829785/SV48SsqmOvbPhdQ-OnrM6ihZGp-K-tWs_RUhWuycLxIkDYd3Ke8bIfznob-L42CL2H-_"; 
             // ==========================================
 
-            if (webhookUrl === "https://discord.com/api/webhooks/1568096844867829785/SV48SsqmOvbPhdQ-OnrM6ihZGp-K-tWs_RUhWuycLxIkDYd3Ke8bIfznob-L42CL2H-_" || webhookUrl === "") {
+            if (webhookUrl === "ใส่_ลิงก์_WEBHOOK_ของ_DISCORD_ที่นี่" || webhookUrl === "") {
                 console.log("ข้ามการส่ง Discord เนื่องจากยังไม่ได้ตั้งค่า Webhook URL");
                 return;
             }
 
-            const payload = {
-                content: `🚨 **แจ้งเตือนผลคะแนนผู้เล่นจบเกม!**\n👤 ผู้เล่น: **${name}**\n🏆 คะแนนที่ได้: **${finalScore}** แต้ม`
-            };
+            const formData = new FormData();
+            formData.append('payload_json', JSON.stringify({
+                content: `🚨 **แจ้งเตือนผลคะแนน Factor_OS!**\n👤 ผู้เล่น: **${name}**\n🏆 คะแนน: **${finalScore}** แต้ม`
+            }));
+            // ส่งรูปภาพโดยใช้ชื่อไฟล์เป็น .png
+            formData.append('file', imageBlob, `FACTOR_OS_${name}_${finalScore}.png`);
 
             fetch(webhookUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: formData // เบราว์เซอร์จะจัดการ Content-Type แบบ multipart/form-data ให้อัตโนมัติ
             }).then(response => {
                 if (response.ok) {
-                    console.log("ส่งคะแนนเข้า Discord สำเร็จ");
+                    console.log("ส่งรูปเข้า Discord สำเร็จ");
                 } else {
-                    console.error("ส่งคะแนนเข้า Discord ล้มเหลว", response.statusText);
+                    console.error("ส่งรูปเข้า Discord ล้มเหลว HTTP Status:", response.status);
+                    alert("แจ้งเตือนครู: การส่งคะแนนเข้า Discord ขัดข้อง");
                 }
-            }).catch(err => console.error("Error sending to Discord:", err));
+            }).catch(err => {
+                console.error("Error sending to Discord:", err);
+            });
         }
 
-        // ฟังก์ชันการแคปหน้าจอรูป
+        // 📸 ฟังก์ชันแคปหน้าจอรูป
         function saveScoreImage() {
             const btnSave = document.getElementById('btn-save-img');
             btnSave.textContent = "⌛ SAVING & SENDING...";
+            btnSave.disabled = true;
             
             const captureArea = document.getElementById('capture-area');
             const originalBorder = captureArea.style.border;
@@ -466,27 +592,34 @@
 
             html2canvas(captureArea, {
                 scale: 2, 
-                backgroundColor: "#000000"
+                backgroundColor: "#000000",
+                logging: false
             }).then(canvas => {
                 captureArea.style.backgroundColor = "";
                 captureArea.style.border = originalBorder;
 
-                // ดาวน์โหลดรูป
+                // 1. ดาวน์โหลดลงเครื่อง
                 const link = document.createElement('a');
                 link.download = `FACTOR_OS_${playerName}_${score}PTS.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
                 
-                // ⭐️ ส่งข้อมูลเข้า Discord ทันทีหลังจากแคปรูปเสร็จ
-                sendDiscordWebhook(playerName, score);
+                // 2. แปลงรูปเป็น Blob แล้วส่ง Webhook
+                canvas.toBlob((blob) => {
+                    sendDiscordWebhook(playerName, score, blob);
+                }, 'image/png');
 
                 btnSave.textContent = "✅ SAVED & SENT!";
-                setTimeout(() => { btnSave.textContent = "📸 SAVE SCORE CARD"; }, 3000);
+                setTimeout(() => { 
+                    btnSave.textContent = "📸 SAVE SCORE CARD"; 
+                    btnSave.disabled = false;
+                }, 3000);
 
             }).catch(err => {
                 console.error("Error capturing image: ", err);
                 alert("เกิดข้อผิดพลาดในการบันทึกภาพ กรุณาลองใหม่อีกครั้ง");
                 btnSave.textContent = "📸 SAVE SCORE CARD";
+                btnSave.disabled = false;
             });
         }
 
@@ -517,7 +650,7 @@
         }
 
         // ==========================================
-        // 🎮 โค้ดมินิเกม 
+        // 🎮 โค้ดมินิเกม (11 เกม)
         // ==========================================
 
         function loadMinigameKeypad() {
@@ -607,7 +740,6 @@
             let choices = generateWrongPairs(2);
             choices.push(correctStr);
             choices.sort(() => Math.random() - 0.5);
-            let correctIdx = choices.indexOf(correctStr);
 
             mgContainer.innerHTML = `
                 <div class="w-full max-w-[340px] md:max-w-lg flex flex-col items-center" id="slider-container">
@@ -1043,51 +1175,82 @@
             });
         }
 
+        // ⭐️ เปลี่ยนตู้เซฟเป็นแบบ 2 ตู้ เพื่อรับคำตอบ 2 ค่า
         function loadMinigameVault() {
             let signs = ['+', '-'];
             let tens = [0, 1]; 
             let ones = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
             
             mgContainer.innerHTML = `
-                <div class="flex flex-col items-center w-full max-w-[240px] md:max-w-xs" id="vault-container">
-                    <div class="text-[10px] md:text-sm mb-4 text-emerald-500 text-center">SECURE VAULT (SET FACTOR)</div>
-                    <div class="flex gap-2 md:gap-4 mb-6">
-                        <div class="flex flex-col items-center">
-                            <button class="v-up btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="0">▲</button>
-                            <div class="v-char text-3xl md:text-5xl font-bold bg-zinc-900 border border-emerald-800 w-12 md:w-16 h-16 md:h-20 flex items-center justify-center my-2 text-white rounded-md" id="v-0">+</div>
-                            <button class="v-down btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="0">▼</button>
+                <div class="flex flex-col items-center w-full max-w-[280px] md:max-w-sm" id="vault-container">
+                    <div class="text-[10px] md:text-sm mb-4 text-emerald-500 text-center">SECURE VAULT (SET BOTH FACTORS)</div>
+                    
+                    <div class="flex flex-col gap-4 mb-6 w-full">
+                        <div class="flex justify-center gap-2 md:gap-4 bg-zinc-900/50 p-2 md:p-3 rounded-lg border border-emerald-900">
+                            <div class="flex flex-col items-center">
+                                <button class="v-up btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="0" data-idx="0">▲</button>
+                                <div class="v-char text-xl md:text-3xl font-bold bg-zinc-900 border border-emerald-800 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center my-2 text-white rounded-md" id="v-0-0">+</div>
+                                <button class="v-down btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="0" data-idx="0">▼</button>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <button class="v-up btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="0" data-idx="1">▲</button>
+                                <div class="v-char text-xl md:text-3xl font-bold bg-zinc-900 border border-emerald-800 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center my-2 text-white rounded-md" id="v-0-1">0</div>
+                                <button class="v-down btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="0" data-idx="1">▼</button>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <button class="v-up btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="0" data-idx="2">▲</button>
+                                <div class="v-char text-xl md:text-3xl font-bold bg-zinc-900 border border-emerald-800 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center my-2 text-white rounded-md" id="v-0-2">0</div>
+                                <button class="v-down btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="0" data-idx="2">▼</button>
+                            </div>
                         </div>
-                        <div class="flex flex-col items-center">
-                            <button class="v-up btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="1">▲</button>
-                            <div class="v-char text-3xl md:text-5xl font-bold bg-zinc-900 border border-emerald-800 w-12 md:w-16 h-16 md:h-20 flex items-center justify-center my-2 text-white rounded-md" id="v-1">0</div>
-                            <button class="v-down btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="1">▼</button>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <button class="v-up btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="2">▲</button>
-                            <div class="v-char text-3xl md:text-5xl font-bold bg-zinc-900 border border-emerald-800 w-12 md:w-16 h-16 md:h-20 flex items-center justify-center my-2 text-white rounded-md" id="v-2">0</div>
-                            <button class="v-down btn-retro w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-xl rounded-md" data-idx="2">▼</button>
+
+                        <div class="flex justify-center gap-2 md:gap-4 bg-zinc-900/50 p-2 md:p-3 rounded-lg border border-emerald-900">
+                            <div class="flex flex-col items-center">
+                                <button class="v-up btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="1" data-idx="0">▲</button>
+                                <div class="v-char text-xl md:text-3xl font-bold bg-zinc-900 border border-emerald-800 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center my-2 text-white rounded-md" id="v-1-0">+</div>
+                                <button class="v-down btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="1" data-idx="0">▼</button>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <button class="v-up btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="1" data-idx="1">▲</button>
+                                <div class="v-char text-xl md:text-3xl font-bold bg-zinc-900 border border-emerald-800 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center my-2 text-white rounded-md" id="v-1-1">0</div>
+                                <button class="v-down btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="1" data-idx="1">▼</button>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <button class="v-up btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="1" data-idx="2">▲</button>
+                                <div class="v-char text-xl md:text-3xl font-bold bg-zinc-900 border border-emerald-800 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center my-2 text-white rounded-md" id="v-1-2">0</div>
+                                <button class="v-down btn-retro w-10 h-8 md:w-12 md:h-10 flex items-center justify-center text-sm md:text-lg rounded-md" data-group="1" data-idx="2">▼</button>
+                            </div>
                         </div>
                     </div>
+                    
                     <button id="vault-submit" class="btn-retro w-full py-3 md:py-4 text-xl md:text-2xl font-bold rounded-lg">UNLOCK</button>
                 </div>
             `;
             const container = document.getElementById('vault-container');
-            let vIdx = [0, 0, 0]; 
+            let vIdx = [
+                [0, 0, 0], 
+                [0, 0, 0]  
+            ]; 
 
             function updateDisplay() {
-                document.getElementById('v-0').textContent = signs[vIdx[0]];
-                document.getElementById('v-1').textContent = tens[vIdx[1]];
-                document.getElementById('v-2').textContent = ones[vIdx[2]];
+                document.getElementById('v-0-0').textContent = signs[vIdx[0][0]];
+                document.getElementById('v-0-1').textContent = tens[vIdx[0][1]];
+                document.getElementById('v-0-2').textContent = ones[vIdx[0][2]];
+                
+                document.getElementById('v-1-0').textContent = signs[vIdx[1][0]];
+                document.getElementById('v-1-1').textContent = tens[vIdx[1][1]];
+                document.getElementById('v-1-2').textContent = ones[vIdx[1][2]];
             }
 
             document.querySelectorAll('.v-up').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     if (isLocked) return;
                     soundClick();
+                    let g = parseInt(e.target.getAttribute('data-group'));
                     let i = parseInt(e.target.getAttribute('data-idx'));
-                    if(i === 0) vIdx[0] = (vIdx[0] + 1) % 2;
-                    if(i === 1) vIdx[1] = (vIdx[1] + 1) % 2; 
-                    if(i === 2) vIdx[2] = (vIdx[2] + 1) % 10;
+                    if(i === 0) vIdx[g][0] = (vIdx[g][0] + 1) % 2;
+                    if(i === 1) vIdx[g][1] = (vIdx[g][1] + 1) % 2; 
+                    if(i === 2) vIdx[g][2] = (vIdx[g][2] + 1) % 10;
                     updateDisplay();
                 });
             });
@@ -1095,18 +1258,20 @@
                 btn.addEventListener('click', (e) => {
                     if (isLocked) return;
                     soundClick();
+                    let g = parseInt(e.target.getAttribute('data-group'));
                     let i = parseInt(e.target.getAttribute('data-idx'));
-                    if(i === 0) vIdx[0] = (vIdx[0] - 1 + 2) % 2;
-                    if(i === 1) vIdx[1] = (vIdx[1] - 1 + 2) % 2; 
-                    if(i === 2) vIdx[2] = (vIdx[2] - 1 + 10) % 10;
+                    if(i === 0) vIdx[g][0] = (vIdx[g][0] - 1 + 2) % 2;
+                    if(i === 1) vIdx[g][1] = (vIdx[g][1] - 1 + 2) % 2; 
+                    if(i === 2) vIdx[g][2] = (vIdx[g][2] - 1 + 10) % 10;
                     updateDisplay();
                 });
             });
 
             document.getElementById('vault-submit').addEventListener('click', () => {
                 if (isLocked) return;
-                let finalValue = (vIdx[0] === 1 ? -1 : 1) * ((tens[vIdx[1]] * 10) + ones[vIdx[2]]);
-                evaluateAnswer(finalValue, container); 
+                let val1 = (vIdx[0][0] === 1 ? -1 : 1) * ((tens[vIdx[0][1]] * 10) + ones[vIdx[0][2]]);
+                let val2 = (vIdx[1][0] === 1 ? -1 : 1) * ((tens[vIdx[1][1]] * 10) + ones[vIdx[1][2]]);
+                evaluateAnswer([val1, val2], container); 
             });
         }
     </script>
